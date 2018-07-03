@@ -1,0 +1,6 @@
+# Crawler dependencies
+node_modules
+
+# Crawler output
+reports/*
+!reports/.gitkeep

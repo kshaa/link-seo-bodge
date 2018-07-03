@@ -1,0 +1,10 @@
+{
+  "name": "link-seo-bodge",
+  "version": "1.0.0",
+  "description": "Bodge for crawling a site for broken links or links w/ trailing, double slashes",
+  "main": "config.js",
+  "author": "Krišjānis Veinbahs",
+  "dependencies": {
+    "broken-link-checker": "^0.7.8"
+  }
+}
