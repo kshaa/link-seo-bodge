@@ -1,9 +1,12 @@
 const blc = require('broken-link-checker')
 
-const crawlSite = "http://www.example.com"
+const crawlSite = "http://example.com"
+const crawlLinks = [ // Leave empty for whole site crawl
+//    "http://example.com/"
+]
 const crawlOptions = {
     rateLimit: 25, // Miliseconds between requests
-    maxSocketsPerHost: 5    
+    maxSocketsPerHost: 5
 }
 
 function isDoubleSlash(url) {
@@ -22,14 +25,15 @@ function isDoubleSlash(url) {
 }
 
 function isTrailingSlash(url) {
-        if (url.indexOf("?") !== -1) {
-                    url = url.substring(0, url.indexOf('?'))
-                            }
-            if (url.indexOf("#") !== -1) {
-                        url = url.substring(0, url.indexOf('#'))
-                                }
+    if (url.indexOf("?") !== -1) {
+        url = url.substring(0, url.indexOf('?'))
+    }
 
-                return url.substr(url.length -1) === "/"; 
+    if (url.indexOf("#") !== -1) {
+        url = url.substring(0, url.indexOf('#'))
+    }
+
+    return url.substr(url.length -1) === "/"; 
 }
 
 function logUrlResult(result) {
@@ -56,15 +60,29 @@ function logUrlResult(result) {
     }
 }
 
-var siteChecker = new blc.SiteChecker({}, {
-    robots: function(robots, customData){},
-    html: function(tree, robots, response, pageUrl, customData){},
-    junk: function(result, customData){},
-    link: logUrlResult, // function(result, customData){},
-    page: function(error, pageUrl, customData){},
-    site: function(error, siteUrl, customData){},
-    end: function(){}
-});
+if (crawlLinks.length !== 0) {
+    var htmlUrlChecker = new blc.HtmlUrlChecker(crawlOptions, {
+        html: function(tree, robots, response, pageUrl, customData){},
+        junk: function(result, customData){},
+        link: logUrlResult,
+        page: function(error, pageUrl, customData){},
+        end: function(){}
+    });
 
-siteChecker.enqueue(crawlSite);
+    for (let crawlLink of crawlLinks) {
+        htmlUrlChecker.enqueue(crawlLink, {});
+    }
+} else {
+    var siteChecker = new blc.SiteChecker(crawlOptions, {
+        robots: function(robots, customData){},
+        html: function(tree, robots, response, pageUrl, customData){},
+        junk: function(result, customData){},
+        link: logUrlResult,
+        page: function(error, pageUrl, customData){},
+        site: function(error, siteUrl, customData){},
+        end: function(){}
+    });
+
+    siteChecker.enqueue(crawlSite);
+}
 
